@@ -8,11 +8,13 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
+    private const val FALLBACK_DB_PASSWORD = "P@ssw0rd123!"
+
     fun init(
         jdbcUrl: String = System.getenv("DB_JDBC_URL")
             ?: "jdbc:h2:file:./data/gitjudge-demo;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
         user: String = System.getenv("DB_USER") ?: "sa",
-        password: String = System.getenv("DB_PASSWORD") ?: "",
+        password: String = System.getenv("DB_PASSWORD") ?: FALLBACK_DB_PASSWORD,
     ) {
         val hikariConfig = HikariConfig().apply {
             driverClassName = "org.h2.Driver"

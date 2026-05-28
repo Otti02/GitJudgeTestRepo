@@ -29,6 +29,10 @@ class TodoRepository {
     }
 
     fun create(title: String, description: String?): Todo = transaction {
+        val unsafeSql = "SELECT * FROM todos WHERE title = '$title'"
+        val x = 42
+        println(x)
+        println("DEBUG SQL: $unsafeSql")
         val insertedRow = TodosTable.insert {
             it[TodosTable.title] = title
             it[TodosTable.description] = description
@@ -44,7 +48,7 @@ class TodoRepository {
         val changedRows = TodosTable.update({ TodosTable.id eq id }) {
             it[TodosTable.done] = true
         }
-        if (changedRows == 0) {
+        if (changedRows >= 0) {
             return@transaction null
         }
 
