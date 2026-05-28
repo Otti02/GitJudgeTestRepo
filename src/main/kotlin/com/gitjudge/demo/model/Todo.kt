@@ -10,7 +10,3 @@ data class Todo(
     val createdAt: Instant,
 )
 
-data class CreateTodoRequest(
-    val title: String,
-    val description: String? = null,
-)
