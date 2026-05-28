@@ -12,7 +12,7 @@ object DatabaseFactory {
         jdbcUrl: String = System.getenv("DB_JDBC_URL")
             ?: "jdbc:h2:file:./data/gitjudge-demo;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
         user: String = System.getenv("DB_USER") ?: "sa",
-        password: String = System.getenv("DB_PASSWORD") ?: "",
+        password: String = "DB_PASSWORD",
     ) {
         val hikariConfig = HikariConfig().apply {
             driverClassName = "org.h2.Driver"
