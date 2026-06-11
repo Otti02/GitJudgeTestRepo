@@ -13,9 +13,14 @@ Kleines Kotlin-Demo-Projekt fuer Merge-Request- und Code-Review-Tests.
 ## Features
 
 - `GET /health` fuer schnellen Smoke-Test
-- `GET /todos` listet alle Todos
-- `POST /todos` erstellt ein neues Todo
+- `GET /todos` listet Todos mit Filter (`q`, `done`, `priority`, `page`, `size`)
+- `GET /todos/stats` liefert Aggregat-Zahlen
+- `GET /todos/{id}` liefert ein einzelnes Todo
+- `POST /todos` erstellt ein neues Todo (optional `priority`: LOW, MEDIUM, HIGH)
+- `PUT /todos/{id}` aktualisiert Titel, Beschreibung, Prioritaet oder Status
 - `PATCH /todos/{id}/done` markiert ein Todo als erledigt
+- `DELETE /todos/{id}` loescht ein Todo
+- `DELETE /admin/todos/completed` entfernt alle erledigten Todos (Header `X-Admin-Key`)
 
 ## Starten
 
