@@ -23,11 +23,11 @@ Kleines Kotlin-Demo-Projekt fuer Merge-Request- und Code-Review-Tests.
 .\gradlew.bat run
 ```
 
-Die App laeuft dann auf:
+Die App läuft dann auf:
 
 - `http://localhost:8080`
 
-Tests ausfuehren:
+Tests ausführen:
 
 ```bash
 .\gradlew.bat test
