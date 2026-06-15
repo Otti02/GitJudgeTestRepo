@@ -36,8 +36,8 @@ Tests ausführen:
 ## Voraussetzungen
 
 - JDK 17+ (App wird mit JVM Toolchain 17 gebaut)
-- Gradle laeuft ueber den Wrapper (`gradlew` / `gradlew.bat`)
-- Gradle 9.4+ unterstuetzt Java 26 als Gradle-JVM (IDE-Sync mit JDK 26 moeglich)
+- Gradle läuft über den Wrapper (`gradlew` / `gradlew.bat`)
+- Gradle 9.4+ unterstützt Java 26 als Gradle-JVM (IDE-Sync mit JDK 26 moeglich)
 
 ## Beispiel-Requests
 
