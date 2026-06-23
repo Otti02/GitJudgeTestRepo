@@ -13,7 +13,9 @@ import io.ktor.server.routing.routing
 
 fun main() {
     embeddedServer(Netty, port = 8080, module = Application::module)
-        .start(wait = true) //loremipsum
+        .start(wait = true)
+
+
 }
 
 fun Application.module(initDatabase: Boolean = true) {
