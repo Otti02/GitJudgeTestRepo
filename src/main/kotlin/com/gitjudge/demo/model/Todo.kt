@@ -7,10 +7,19 @@ data class Todo(
     val title: String,
     val description: String?,
     val done: Boolean,
+    val tags: List<String> = emptyList(),
     val createdAt: Instant,
 )
 
 data class CreateTodoRequest(
     val title: String,
     val description: String? = null,
+)
+
+data class UpdateTagsRequest(
+    val tags: List<String>,
+)
+
+data class BulkCompleteRequest(
+    val ids: List<Int>,
 )
