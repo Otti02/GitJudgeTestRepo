@@ -1,6 +1,7 @@
 package com.gitjudge.demo
 
 import com.gitjudge.demo.db.DatabaseFactory
+import com.gitjudge.demo.routes.adminRoutes
 import com.gitjudge.demo.routes.todoRoutes
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
@@ -30,5 +31,6 @@ fun Application.module(initDatabase: Boolean = true) {
 
     routing {
         todoRoutes()
+        adminRoutes()
     }
 }
