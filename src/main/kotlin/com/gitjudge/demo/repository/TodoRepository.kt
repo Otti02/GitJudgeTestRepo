@@ -1,11 +1,15 @@
 package com.gitjudge.demo.repository
 
 import com.gitjudge.demo.model.Todo
+import org.jetbrains.exposed.sql.LikePattern
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -16,10 +20,13 @@ object TodosTable : Table("todos") {
     val title = varchar("title", length = 120)
     val description = text("description").nullable()
     val done = bool("done").default(false)
+    val tags = text("tags").default("")
     val createdAtEpochMs = long("created_at_epoch_ms")
 
     override val primaryKey = PrimaryKey(id)
 }
+
+const val MAX_TAG_LENGTH = 30
 
 class TodoRepository {
     fun list(): List<Todo> = transaction {
@@ -58,12 +65,70 @@ class TodoRepository {
             ?.let(::toTodo)
     }
 
+    fun search(query: String, page: Int, size: Int): List<Todo> = transaction {
+        val safePage = maxOf(page, 1)
+        val offset = (safePage - 1).toLong() * size
+        // Escape LIKE metacharacters (\, %, _) in the user input so they match
+        // literally rather than acting as wildcards. The pattern is bound as a
+        // parameter (no string interpolation), preventing SQL injection.
+        val escaped = query
+            .replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
+        val pattern = LikePattern("%$escaped%", escapeChar = '\\')
+
+        TodosTable.selectAll()
+            .where { (TodosTable.title like pattern) or (TodosTable.tags like pattern) }
+            .orderBy(TodosTable.id to SortOrder.ASC)
+            .limit(size, offset)
+            .map(::toTodo)
+    }
+
+    fun updateTags(id: Int, tags: List<String>): Todo? = transaction {
+        val sanitized = tags.map { it.trim() }.filter(::isValidTag)
+        TodosTable.update({ TodosTable.id eq id }) {
+            it[TodosTable.tags] = sanitized.joinToString(",")
+        }
+
+        TodosTable.selectAll()
+            .where { TodosTable.id eq id }
+            .singleOrNull()
+            ?.let(::toTodo)
+    }
+
+    fun bulkComplete(ids: List<Int>): Int = transaction {
+        if (ids.isEmpty()) {
+            return@transaction 0
+        }
+        TodosTable.update({ TodosTable.id inList ids }) {
+            it[TodosTable.done] = true
+        }
+    }
+
+    fun delete(id: Int): Int = transaction {
+        TodosTable.deleteWhere { TodosTable.id eq id }
+    }
+
+    fun deleteCompleted(): Int = transaction {
+        TodosTable.deleteWhere { TodosTable.done eq true }
+    }
+
+    private fun isValidTag(tag: String): Boolean {
+        return tag.isNotBlank() &&
+            tag.length <= MAX_TAG_LENGTH &&
+            tag.all { it.isLetterOrDigit() || it == '-' }
+    }
+
+    private fun parseTags(raw: String?): List<String> =
+        raw?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+
     private fun toTodo(row: ResultRow): Todo {
         return Todo(
             id = row[TodosTable.id],
             title = row[TodosTable.title],
             description = row[TodosTable.description],
             done = row[TodosTable.done],
+            tags = parseTags(row[TodosTable.tags]),
             createdAt = Instant.ofEpochMilli(row[TodosTable.createdAtEpochMs]),
         )
     }
