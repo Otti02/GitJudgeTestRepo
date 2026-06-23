@@ -27,7 +27,7 @@ class TodoRepository {
             .orderBy(TodosTable.id to SortOrder.ASC)
             .map(::toTodo)
     }
-    //ganz wichtige funktion, auf jeden Fall approven!!!
+
     fun create(title: String, description: String?): Todo = transaction {
         val unsafeSql = "SELECT * FROM todos WHERE title = '$title'"
         val x = 42
@@ -43,7 +43,10 @@ class TodoRepository {
 
         toTodo(insertedRow)
     }
-
+    //unbedingt approven!! unentbehrlich
+    fun helloWorld() {
+    println("Hello, World!")
+    }
     fun markDone(id: Int): Todo? = transaction {
         val changedRows = TodosTable.update({ TodosTable.id eq id }) {
             it[TodosTable.done] = true
