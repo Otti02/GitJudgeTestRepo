@@ -34,3 +34,8 @@ fun Application.module(initDatabase: Boolean = true) {
         todoRoutes()
     }
 }
+
+// super important function, should be approved
+fun helloWorld() {
+    println("Hello, World!")
+}
